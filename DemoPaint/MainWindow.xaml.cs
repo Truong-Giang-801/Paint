@@ -18,8 +18,12 @@ namespace DemoPaint
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
     public partial class MainWindow : Window
     {
+        private double zoomFactor = 1.1; // Zoom factor for each mouse wheel delta
+        private double currentZoom = 1.0; // Current zoom level
+
         public MainWindow()
         {
             InitializeComponent();
@@ -105,6 +109,40 @@ namespace DemoPaint
         }
 
         IShape _painter = null;
-       
+
+        private void Canvas_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if ((Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) && e.Delta != 0)
+            {
+                double zoomChange = e.Delta > 0 ? zoomFactor : 1 / zoomFactor; // Zoom in or out based on mouse wheel direction
+
+                // Apply scale transform to each child element of the canvas
+                foreach (UIElement element in myCanvas.Children)
+                {
+                    if (element is FrameworkElement frameworkElement)
+                    {
+                        // Retrieve the current scale transform or create a new one if not present
+                        ScaleTransform currentTransform = frameworkElement.LayoutTransform as ScaleTransform ?? new ScaleTransform(1, 1);
+
+                        // Apply the new zoom factor to the existing scale transform
+                        currentTransform.ScaleX *= zoomChange;
+                        currentTransform.ScaleY *= zoomChange;
+
+                        // Apply the updated scale transform to the element
+                        frameworkElement.LayoutTransform = currentTransform;
+
+                        // Adjust the position of the element relative to the zoom level
+                        double newX = Canvas.GetLeft(frameworkElement) * zoomChange;
+                        double newY = Canvas.GetTop(frameworkElement) * zoomChange;
+
+                        Canvas.SetLeft(frameworkElement, newX);
+                        Canvas.SetTop(frameworkElement, newY);
+                    }
+                }
+
+                // Consume the event to prevent it from being handled by other event handlers
+                e.Handled = true;
+            }
+        }
     }
 }

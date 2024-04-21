@@ -10,12 +10,13 @@
         <StackPanel Name="actions" DockPanel.Dock="Top" Orientation="Horizontal" Height="40" Background="Black">
         </StackPanel>
         <Grid>
-            <Canvas x:Name="myCanvas">
+            <Canvas x:Name="myCanvas" >
             </Canvas>
-            <Canvas Background="Transparent" 
-         MouseLeftButtonDown="Canvas_MouseLeftButtonDown"
-         MouseMove="Canvas_MouseMove" 
-         MouseLeftButtonUp="Canvas_MouseLeftButtonUp">
+            <Canvas x:Name="zoomCanvas" Background="Transparent" 
+                    MouseLeftButtonDown="Canvas_MouseLeftButtonDown"
+                    MouseMove="Canvas_MouseMove" 
+                    MouseLeftButtonUp="Canvas_MouseLeftButtonUp"
+                    PreviewMouseWheel="Canvas_PreviewMouseWheel">
             </Canvas>
         </Grid>
        
