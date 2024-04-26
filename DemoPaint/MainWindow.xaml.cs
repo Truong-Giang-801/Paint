@@ -77,6 +77,7 @@ namespace DemoPaint
             }
             if (File.Exists("shapes.bin"))
             {
+                // Load
                 // If the file exists, read its contents and deserialize the shapes
                 byte[] loadedData = File.ReadAllBytes("shapes.bin");
                 List<IShape> loadedShapes = DeserializeShapes(loadedData);
@@ -130,6 +131,8 @@ namespace DemoPaint
             count++;
             _isDrawing = false;
             _painters.Add((IShape)_painter.Clone());
+            
+            // Save
             byte[] serializedShapes = SerializeShapes(_painters);
             File.WriteAllBytes("shapes.bin", serializedShapes);
         }
