@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Windows;
@@ -80,6 +81,7 @@ namespace DemoPaint
                 byte[] loadedData = File.ReadAllBytes("shapes.bin");
                 List<IShape> loadedShapes = DeserializeShapes(loadedData);
                 _painters = loadedShapes;
+                count = _painters.Count;
                 foreach (var item in _painters)
                 {
                     myCanvas.Children.Add(item.Convert());
@@ -88,6 +90,7 @@ namespace DemoPaint
             }
             else
             {
+                count = 0;
                 _painter = _prototypes[0];
             }
         }
@@ -101,7 +104,7 @@ namespace DemoPaint
             _isDrawing = true;
             _start = e.GetPosition(myCanvas);
         }
-        int count = 0;
+        int count;
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {   
             if (_isDrawing)
@@ -124,6 +127,7 @@ namespace DemoPaint
 
         private void Canvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            count++;
             _isDrawing = false;
             _painters.Add((IShape)_painter.Clone());
             byte[] serializedShapes = SerializeShapes(_painters);
