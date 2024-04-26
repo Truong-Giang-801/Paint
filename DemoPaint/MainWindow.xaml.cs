@@ -75,7 +75,22 @@ namespace DemoPaint
                 control.Click += Control_Click;
                 actions.Children.Add(control);
             }
-            _painter = _prototypes[0];
+            if (File.Exists("shapes.bin"))
+            {
+                // If the file exists, read its contents and deserialize the shapes
+                byte[] loadedData = File.ReadAllBytes("shapes.bin");
+                List<IShape> loadedShapes = DeserializeShapes(loadedData);
+                _painters = loadedShapes;
+                foreach (var item in _painters)
+                {
+                    myCanvas.Children.Add(item.Convert());
+                }
+                _painter = _prototypes[0];
+            }
+            else
+            {
+                _painter = _prototypes[0];
+            }
         }
         private void Control_Click(object sender, RoutedEventArgs e)  {
             IShape item = (IShape)(sender as Button)!.Tag;
@@ -108,7 +123,9 @@ namespace DemoPaint
         private void Canvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             _isDrawing = false;
-            _painters.Add((IShape)_painter.Clone());                        
+            _painters.Add((IShape)_painter.Clone());
+            byte[] serializedShapes = SerializeShapes(_painters);
+            File.WriteAllBytes("shapes.bin", serializedShapes);
         }
 
         IShape _painter = null;
@@ -205,5 +222,77 @@ namespace DemoPaint
                 e.Handled = true; // Mark the event as handled
             }
         }
+        public byte[] SerializeShapes(List<IShape> shapes)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var binaryWriter = new BinaryWriter(memoryStream))
+                {
+                    binaryWriter.Write(shapes.Count); // Write the number of shapes
+                    foreach (var shape in shapes)
+                    {
+                        // Serialize the shape's name
+                        var shapeNameBytes = Encoding.UTF8.GetBytes(shape.Name);
+                        binaryWriter.Write(shapeNameBytes.Length); // Write the length of the serialized shape name
+                        binaryWriter.Write(shapeNameBytes); // Write the serialized shape name
+
+                        // Serialize the Start point
+                        binaryWriter.Write(shape.Start.X); // Write the X coordinate of the Start point
+                        binaryWriter.Write(shape.Start.Y); // Write the Y coordinate of the Start point
+
+                        // Serialize the End point
+                        binaryWriter.Write(shape.End.X); // Write the X coordinate of the End point
+                        binaryWriter.Write(shape.End.Y); // Write the Y coordinate of the End point
+                    }
+                }
+                return memoryStream.ToArray();
+            }
+        }
+
+        public List<IShape> DeserializeShapes(byte[] data)
+        {
+            var shapes = new List<IShape>();
+            using (var memoryStream = new MemoryStream(data))
+            {
+                using (var binaryReader = new BinaryReader(memoryStream))
+                {
+                    int shapeCount = binaryReader.ReadInt32(); // Read the number of shapes
+                    for (int i = 0; i < shapeCount; i++)
+                    {
+                        // Deserialize the shape's name
+                        int shapeNameLength = binaryReader.ReadInt32();
+                        byte[] shapeNameBytes = binaryReader.ReadBytes(shapeNameLength);
+                        string shapeName = Encoding.UTF8.GetString(shapeNameBytes);
+
+                        // Deserialize the Start point
+                        double startX = binaryReader.ReadDouble();
+                        double startY = binaryReader.ReadDouble();
+                        Point startPoint = new Point(startX, startY);
+
+                        // Deserialize the End point
+                        double endX = binaryReader.ReadDouble();
+                        double endY = binaryReader.ReadDouble();
+                        Point endPoint = new Point(endX, endY);
+
+                        // Assuming you have a way to create a shape instance based on its name
+                        // and set its Start and End points
+                        foreach (var item in _prototypes)
+                        {
+                            if (item.Name == shapeName)
+                            {
+                                IShape shapeInstance = item as IShape;
+                                shapeInstance.Start = startPoint;
+                                shapeInstance.End = endPoint;
+                                // Add the reconstructed shape to your list
+                                shapes.Add((IShape)shapeInstance.Clone());
+                            }    
+                        }
+
+                    }
+                }
+            }
+            return shapes;
+        }
+
     }
 }
