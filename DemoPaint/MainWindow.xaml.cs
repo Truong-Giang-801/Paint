@@ -28,7 +28,6 @@ namespace DemoPaint
         public MainWindow()
         {
             InitializeComponent();
-            scrollViewer.AddHandler(ScrollViewer.PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(scrollViewer_PreviewMouseLeftButtonDown), true);
 
         }
 
@@ -102,21 +101,24 @@ namespace DemoPaint
             _isDrawing = true;
             _start = e.GetPosition(myCanvas);
         }
-
+        int count = 0;
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
-        {
+        {   
             if (_isDrawing)
             {
                 _end = e.GetPosition(myCanvas);
-                myCanvas.Children.Clear(); 
-                foreach(var item in _painters)
+                // **Handle potential null reference:**
+                if (_lastElement != null && count < myCanvas.Children.Count )
                 {
-                    myCanvas.Children.Add(item.Convert());
+                    myCanvas.Children.Remove(_lastElement);
                 }
 
                 _painter.Start = _start;
                 _painter.End = _end;
-                myCanvas.Children.Add(_painter.Convert());
+                UIElement newElement = _painter.Convert();
+                myCanvas.Children.Add(newElement);
+                _lastElement = newElement;
+                
             }
         }
 
