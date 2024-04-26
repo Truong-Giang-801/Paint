@@ -5,8 +5,8 @@ namespace Shapes
 {
     public interface IShape : ICloneable
     {
-        void AddFirst(Point point);
-        void AddSecond(Point point);
+        Point Start { get; set; }
+        Point End { get; set; }
         UIElement Convert();
         string Name { get; }
     }

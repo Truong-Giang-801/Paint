@@ -8,19 +8,25 @@ namespace MyLine
 {
     public class MyLine : IShape
     {
-        private Point _start;
-        private Point _end;
-
+        private Point start { get; set; }
+        private Point end { get; set; }
+        public Point Start
+        {
+            get { return start; }
+            set
+            {
+                start = value;
+            }
+        }
+        public Point End
+        {
+            get { return end; }
+            set
+            {
+                end = value;
+            }
+        }
         public string Name => "Line";
-
-        public void AddFirst(Point point)
-        {
-            _start = point;
-        }
-        public void AddSecond(Point point)
-        {
-            _end = point;
-        }
 
         public object Clone()
         {
@@ -31,10 +37,10 @@ namespace MyLine
         {
             return new Line()
             {
-                X1 = _start.X,
-                Y1 = _start.Y,
-                X2 = _end.X,
-                Y2 = _end.Y,
+                X1 = start.X,
+                Y1 = start.Y,
+                X2 = end.X,
+                Y2 = end.Y,
                 StrokeThickness = 1,
                 Stroke = new SolidColorBrush(Colors.Red)
             }; ;

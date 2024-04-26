@@ -96,8 +96,8 @@ namespace DemoPaint
                     myCanvas.Children.Add(item.Convert());
                 }
 
-                _painter.AddFirst(_start);
-                _painter.AddSecond(_end);
+                _painter.Start = _start;
+                _painter.End = _end;
                 myCanvas.Children.Add(_painter.Convert());
             }
         }
