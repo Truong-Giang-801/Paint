@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Ink;
@@ -27,6 +28,8 @@ namespace DemoPaint
         public MainWindow()
         {
             InitializeComponent();
+            scrollViewer.AddHandler(ScrollViewer.PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(scrollViewer_PreviewMouseLeftButtonDown), true);
+
         }
 
         bool _isDrawing = false;
@@ -109,39 +112,97 @@ namespace DemoPaint
         }
 
         IShape _painter = null;
+        private bool isDragging = false;
+        private Point lastMousePosition;
 
-        private void Canvas_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private void zoomCanvas_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if ((Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) && e.Delta != 0)
+            double zoomFactor = e.Delta > 0 ? 1.1 : 1 / 1.1;
+
+            // Calculate the new scale
+            double newScaleX = scaleTransform.ScaleX * zoomFactor;
+            double newScaleY = scaleTransform.ScaleY * zoomFactor;
+
+            // Calculate the zoomed width and height of the canvas
+            double zoomedWidth = zoomCanvas.ActualWidth * newScaleX;
+            double zoomedHeight = zoomCanvas.ActualHeight * newScaleY;
+
+            // Calculate the new scroll offsets
+            Point position = e.GetPosition(scrollViewer);
+            double offsetX = (position.X + scrollViewer.HorizontalOffset) * (zoomFactor - 1);
+            double offsetY = (position.Y + scrollViewer.VerticalOffset) * (zoomFactor - 1);
+
+            // Apply the new scale
+            scaleTransform.ScaleX = newScaleX;
+            scaleTransform.ScaleY = newScaleY;
+
+            // Update the size of the Canvas to reflect the scaled content
+            myCanvas.Width = zoomedWidth;
+            myCanvas.Height = zoomedHeight;
+
+            // Adjust the scroll viewer's scroll bars considering the zoom level
+            scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset + offsetX);
+            scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset + offsetY);
+
+            // Prevent the event from bubbling up to parent controls
+            e.Handled = true;
+        }
+
+        private void scrollViewer_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (isDragging)
             {
-                double zoomChange = e.Delta > 0 ? zoomFactor : 1 / zoomFactor; // Zoom in or out based on mouse wheel direction
+                Point currentPosition = e.GetPosition(scrollViewer);
+                double offsetX = currentPosition.X - lastMousePosition.X;
+                double offsetY = currentPosition.Y - lastMousePosition.Y;
 
-                // Apply scale transform to each child element of the canvas
-                foreach (UIElement element in myCanvas.Children)
-                {
-                    if (element is FrameworkElement frameworkElement)
-                    {
-                        // Retrieve the current scale transform or create a new one if not present
-                        ScaleTransform currentTransform = frameworkElement.LayoutTransform as ScaleTransform ?? new ScaleTransform(1, 1);
+                // Adjust the scroll viewer's scroll bars
+                scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset - offsetX);
+                scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - offsetY);
 
-                        // Apply the new zoom factor to the existing scale transform
-                        currentTransform.ScaleX *= zoomChange;
-                        currentTransform.ScaleY *= zoomChange;
+                lastMousePosition = currentPosition;
+            }
+        }
 
-                        // Apply the updated scale transform to the element
-                        frameworkElement.LayoutTransform = currentTransform;
-
-                        // Adjust the position of the element relative to the zoom level
-                        double newX = Canvas.GetLeft(frameworkElement) * zoomChange;
-                        double newY = Canvas.GetTop(frameworkElement) * zoomChange;
-
-                        Canvas.SetLeft(frameworkElement, newX);
-                        Canvas.SetTop(frameworkElement, newY);
-                    }
-                }
-
-                // Consume the event to prevent it from being handled by other event handlers
+        private void scrollViewer_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (isDragging)
+            {
+                isDragging = false;
+                scrollViewer.ReleaseMouseCapture();
                 e.Handled = true;
+            }
+
+        }
+
+        private void scrollViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DependencyObject obj = e.OriginalSource as DependencyObject;
+            while (obj != null && obj != scrollViewer)
+            {
+                if (obj is ScrollBar)
+                {
+                    // Handle the click on the ScrollBar
+                    // For example, you can set a flag to indicate that the scrollbar is being dragged
+                    isDragging = true;
+                    lastMousePosition = e.GetPosition(scrollViewer);
+                    scrollViewer.CaptureMouse();
+                    e.Handled = true; // Mark the event as handled to prevent it from bubbling further
+                    return;
+                }
+                obj = VisualTreeHelper.GetParent(obj);
+            }
+        }
+
+        private void scrollViewer_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.OriginalSource is ScrollBar)
+            {
+                // Handle the click on the ScrollBar
+                isDragging = true;
+                lastMousePosition = e.GetPosition(scrollViewer);
+                scrollViewer.CaptureMouse();
+                e.Handled = true; // Mark the event as handled
             }
         }
     }
