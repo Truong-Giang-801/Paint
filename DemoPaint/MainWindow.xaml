@@ -22,12 +22,11 @@
                     MouseMove="Canvas_MouseMove" 
                     MouseLeftButtonUp="Canvas_MouseLeftButtonUp"
                     PreviewMouseWheel ="zoomCanvas_PreviewMouseWheel">
-      
+
             </Canvas>
 
         </Grid>
-
     </DockPanel>
 
-    
+
 </Window>

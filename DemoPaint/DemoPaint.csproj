@@ -13,6 +13,7 @@
     <ProjectReference Include="..\MyEllipse\MyEllipse.csproj" />
     <ProjectReference Include="..\MyLine\MyLine.csproj" />
     <ProjectReference Include="..\MyRectangle\MyRectangle.csproj" />
+    <ProjectReference Include="..\MyText\MyText.csproj" />
   </ItemGroup>
 
 </Project>

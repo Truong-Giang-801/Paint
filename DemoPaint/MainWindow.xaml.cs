@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Shapes;
-
+using MyText;
 namespace DemoPaint
 {
     /// <summary>
@@ -120,6 +120,10 @@ namespace DemoPaint
                 _painter.Start = _start;
                 _painter.End = _end;
                 UIElement newElement = _painter.Convert();
+                if (_painter.Name == "Text")
+                {
+                    newElement.Focus();
+                }
                 myCanvas.Children.Add(newElement);
                 _lastElement = newElement;
                 
@@ -130,6 +134,10 @@ namespace DemoPaint
         {
             count++;
             _isDrawing = false;
+            var viewModel = new TextViewModel();
+
+
+
             _painters.Add((IShape)_painter.Clone());
             
             // Save
