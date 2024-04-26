@@ -10,21 +10,24 @@
         <StackPanel Name="actions" DockPanel.Dock="Top" Orientation="Horizontal" Height="40" Background="Black">
         </StackPanel>
         <Grid>
-            <Canvas x:Name="myCanvas" >
-            </Canvas>
+            <ScrollViewer x:Name="scrollViewer" PreviewMouseMove="scrollViewer_PreviewMouseMove" PreviewMouseLeftButtonUp="scrollViewer_PreviewMouseLeftButtonUp" PreviewMouseLeftButtonDown="scrollViewer_PreviewMouseLeftButtonDown" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <Canvas x:Name="myCanvas">
+                    <Canvas.RenderTransform>
+                        <ScaleTransform x:Name="scaleTransform" ScaleX="1" ScaleY="1"/>
+                    </Canvas.RenderTransform>
+                </Canvas>
+            </ScrollViewer>
             <Canvas x:Name="zoomCanvas" Background="Transparent" 
                     MouseLeftButtonDown="Canvas_MouseLeftButtonDown"
                     MouseMove="Canvas_MouseMove" 
                     MouseLeftButtonUp="Canvas_MouseLeftButtonUp"
-                    PreviewMouseWheel="Canvas_PreviewMouseWheel" Margin="0,0,10,10"/>
+                    PreviewMouseWheel ="zoomCanvas_PreviewMouseWheel">
+      
+            </Canvas>
+
         </Grid>
 
     </DockPanel>
 
-    <!--<Line X1="10" Y1="10" X2="50" Y2="50" StrokeThickness="2" Stroke="Red"/>
-        <Ellipse Width="80" Height="100" StrokeThickness="2" Stroke="Blue" 
-                 Canvas.Left="87" Canvas.Top="10"/>
-        <Rectangle Width="100" Height="100" StrokeThickness="2" Stroke="Green" 
-                   Canvas.Left="209" Canvas.Top="20"/>-->
-
+    
 </Window>
