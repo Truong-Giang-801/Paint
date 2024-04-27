@@ -23,6 +23,7 @@ namespace DemoPaint
     /// 
     public partial class MainWindow : Window
     {
+
         private double zoomFactor = 1.1; // Zoom factor for each mouse wheel delta
         private double currentZoom = 1.0; // Current zoom level
 
@@ -85,6 +86,12 @@ namespace DemoPaint
                 count = _painters.Count;
                 foreach (var item in _painters)
                 {
+                    UIElement element = item.Convert();
+
+                    if (element is TextBox textBox)
+                    {
+                        textBox.ReleaseMouseCapture();
+                    }
                     myCanvas.Children.Add(item.Convert());
                 }
                 _painter = _prototypes[0];
@@ -102,8 +109,20 @@ namespace DemoPaint
 
         private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+
             _isDrawing = true;
             _start = e.GetPosition(myCanvas);
+            
+           if(_prePainter!= null)
+            {
+
+                if (_prePainter.Convert() is TextBox && myCanvas.Children[myCanvas.Children.Count-1] is TextBox textBox1)
+                {
+                    //Debug.WriteLine(textBox1.Text);
+                    _prePainter.Text = textBox1.Text;
+                    _painters.Add((IShape)_prePainter.Clone());
+                }
+            }
         }
         int count;
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
@@ -120,13 +139,9 @@ namespace DemoPaint
                 _painter.Start = _start;
                 _painter.End = _end;
                 UIElement newElement = _painter.Convert();
-                if (_painter.Name == "Text")
-                {
-                    newElement.Focus();
-                }
                 myCanvas.Children.Add(newElement);
                 _lastElement = newElement;
-                
+
             }
         }
 
@@ -135,17 +150,31 @@ namespace DemoPaint
             count++;
             _isDrawing = false;
             var viewModel = new TextViewModel();
+            //if (myCanvas.Children[myCanvas.Children.Count] is TextBox textBox)
+            //{
+            //    _painter.Text = textBox.Text;
+            //    Debug.WriteLine(_painter.Text);
+            //}
+            if(_painter.Convert() is not TextBox)
+            {
+                _painters.Add((IShape)_painter.Clone());
 
+            }
+            else
+            {
+                _prePainter = (IShape)_painter.Clone();
 
+            }
 
-            _painters.Add((IShape)_painter.Clone());
-            
             // Save
             byte[] serializedShapes = SerializeShapes(_painters);
             File.WriteAllBytes("shapes.bin", serializedShapes);
         }
 
+
         IShape _painter = null;
+        IShape _prePainter = null;
+
         private bool isDragging = false;
         private Point lastMousePosition;
 
@@ -260,6 +289,7 @@ namespace DemoPaint
                         // Serialize the End point
                         binaryWriter.Write(shape.End.X); // Write the X coordinate of the End point
                         binaryWriter.Write(shape.End.Y); // Write the Y coordinate of the End point
+                        binaryWriter.Write(shape.Text.ToString());
                     }
                 }
                 return memoryStream.ToArray();
@@ -291,6 +321,9 @@ namespace DemoPaint
                         double endY = binaryReader.ReadDouble();
                         Point endPoint = new Point(endX, endY);
 
+                        string text = binaryReader.ReadString();
+                        //Debug.WriteLine(text);
+
                         // Assuming you have a way to create a shape instance based on its name
                         // and set its Start and End points
                         foreach (var item in _prototypes)
@@ -300,6 +333,8 @@ namespace DemoPaint
                                 IShape shapeInstance = item as IShape;
                                 shapeInstance.Start = startPoint;
                                 shapeInstance.End = endPoint;
+                                shapeInstance.Text = text;
+                                //Debug.WriteLine(shapeInstance.Text);
                                 // Add the reconstructed shape to your list
                                 shapes.Add((IShape)shapeInstance.Clone());
                             }    
@@ -311,5 +346,9 @@ namespace DemoPaint
             return shapes;
         }
 
+        private void zoomCanvas_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            
+        }
     }
 }

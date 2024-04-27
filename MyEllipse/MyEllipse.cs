@@ -12,6 +12,22 @@ namespace MyEllipse
     {
         private Point start { get; set; }
         private Point end { get; set; }
+        public string? text { get; set; }
+
+        public string? Text
+        {
+            get
+            {
+                if (text == null)
+                    return " ";
+                else
+                    return text;
+            }
+            set
+            {
+                text = value;
+            }
+        }
         public Point Start
         {
             get { return start; }

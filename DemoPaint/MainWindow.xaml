@@ -21,7 +21,8 @@
                     MouseLeftButtonDown="Canvas_MouseLeftButtonDown"
                     MouseMove="Canvas_MouseMove" 
                     MouseLeftButtonUp="Canvas_MouseLeftButtonUp"
-                    PreviewMouseWheel ="zoomCanvas_PreviewMouseWheel">
+                    PreviewMouseWheel ="zoomCanvas_PreviewMouseWheel"
+                    PreviewKeyDown="zoomCanvas_PreviewKeyDown">
 
             </Canvas>
 

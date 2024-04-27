@@ -5,13 +5,16 @@ using Shapes;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Windows.Data;
+using System.Reflection;
 
 namespace MyText
 {
-    public class MyText : IShape
+    public class MyText : IShape 
     {
         private Point start { get; set; }
         private Point end { get; set; }
+        public string? text { get; set; }
+        
         public Point Start
         {
             get { return start; }
@@ -29,7 +32,17 @@ namespace MyText
             }
         }
         public string Name => "Text";
-
+        public string? Text
+        {
+            get { if (text == null)
+                    return " ";
+                    else
+                return text; }
+            set
+            {
+                text = value;
+            }
+        }
         public object Clone()
         {
             return MemberwiseClone();
@@ -40,24 +53,29 @@ namespace MyText
             // Assuming you have an instance of TextViewModel named viewModel
             var viewModel = new TextViewModel(); // Create a new ViewModel instance
 
-            var item = new TextBox()
+            var newTextBox = new TextBox()
             {
                 Width = Math.Abs(end.X - start.X),
                 Height = Math.Abs(end.Y - start.Y),
-                Text = "", // Initial empty text
+                Text =text,// Initial empty text
             };
 
             // Bind Text property to ViewModel
-            item.SetBinding(TextBox.TextProperty, new Binding("Text") { Source = viewModel });
 
-            Canvas.SetLeft(item, Math.Min(start.X, end.X));
-            Canvas.SetTop(item, Math.Min(start.Y, end.Y));
+            Canvas.SetLeft(newTextBox, Math.Min(start.X, end.X));
+            Canvas.SetTop(newTextBox, Math.Min(start.Y, end.Y));
 
-            // Ensure focus is set on the newly created textbox
-            item.Dispatcher.BeginInvoke(new Action(() => item.Focus()), System.Windows.Threading.DispatcherPriority.Background);
+            newTextBox.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                newTextBox.Focus();
+            }), System.Windows.Threading.DispatcherPriority.Background);
 
-            return item;
+            // TextChanged event handler
+
+            return newTextBox;
+
         }
     }
 
 }
+

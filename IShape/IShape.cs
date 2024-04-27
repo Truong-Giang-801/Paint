@@ -9,6 +9,7 @@ namespace Shapes
         Point End { get; set; }
         UIElement Convert();
         string Name { get; }
+        public string? Text { get; set; }
     }
 
 }

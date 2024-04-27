@@ -3,6 +3,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows;
 using Shapes;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MyLine
 {
@@ -10,6 +11,22 @@ namespace MyLine
     {
         private Point start { get; set; }
         private Point end { get; set; }
+        public string? text { get; set; }
+
+        public string? Text
+        {
+            get
+            {
+                if (text == null)
+                    return " ";
+                else
+                    return text;
+            }
+            set
+            {
+                text = value;
+            }
+        }
         public Point Start
         {
             get { return start; }
@@ -43,7 +60,8 @@ namespace MyLine
                 Y2 = end.Y,
                 StrokeThickness = 1,
                 Stroke = new SolidColorBrush(Colors.Red)
-            }; ;
+            }; 
+
         }
     }
 
