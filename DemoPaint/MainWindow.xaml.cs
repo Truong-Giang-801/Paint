@@ -15,6 +15,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Shapes;
 using MyText;
+using Microsoft.Win32;
+
 namespace DemoPaint
 {
     /// <summary>
@@ -47,17 +49,18 @@ namespace DemoPaint
             string folder = AppDomain.CurrentDomain.BaseDirectory;
             var fis = new DirectoryInfo(folder).GetFiles("*.dll");
 
-            foreach(var fi in fis)
+            foreach (var fi in fis)
             {
                 // Lấy tất cả kiểu dữ liệu trong dll
                 var assembly = Assembly.LoadFrom(fi.FullName);
                 var types = assembly.GetTypes();
 
-                foreach(var type in types)
+                foreach (var type in types)
                 {
-                    if ((type.IsClass) 
-                        && (typeof(IShape).IsAssignableFrom(type))) {
-                        _prototypes.Add((IShape) Activator.CreateInstance(type)!);
+                    if ((type.IsClass)
+                        && (typeof(IShape).IsAssignableFrom(type)))
+                    {
+                        _prototypes.Add((IShape)Activator.CreateInstance(type)!);
                     }
                 }
             }
@@ -70,7 +73,7 @@ namespace DemoPaint
                 {
                     Width = 80,
                     Height = 35,
-                    Content = item.Name, 
+                    Content = item.Name,
                     Tag = item,
                 };
                 control.Click += Control_Click;
@@ -78,33 +81,35 @@ namespace DemoPaint
             }
             if (File.Exists("shapes.bin"))
             {
-                // Load
-                // If the file exists, read its contents and deserialize the shapes
-                byte[] loadedData = File.ReadAllBytes("shapes.bin");
-                List<IShape> loadedShapes = DeserializeShapes(loadedData);
-                _painters = loadedShapes;
-                count = _painters.Count;
-                foreach (var item in _painters)
+                // Ask the user if they want to load the shapes.bin file
+                MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Do you want to load the shapes from shapes.bin?", "Load Shapes", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Question);
+                if (messageBoxResult == MessageBoxResult.Yes)
                 {
-                    UIElement element = item.Convert();
-
-                    if (element is TextBox textBox)
+                    // Load
+                    // If the user wants to load the file, read its contents and deserialize the shapes
+                    byte[] loadedData = File.ReadAllBytes("shapes.bin");
+                    List<IShape> loadedShapes = DeserializeShapes(loadedData);
+                    _painters = loadedShapes;
+                    count = _painters.Count;
+                    foreach (var item in _painters)
                     {
-                        textBox.ReleaseMouseCapture();
+                        UIElement element = item.Convert();
+
+                        if (element is TextBox textBox)
+                        {
+                            textBox.ReleaseMouseCapture();
+                        }
+                        myCanvas.Children.Add(item.Convert());
                     }
-                    myCanvas.Children.Add(item.Convert());
                 }
-                _painter = _prototypes[0];
             }
-            else
-            {
-                count = 0;
-                _painter = _prototypes[0];
-            }
+            else count = 0;
+            _painter = _prototypes[0];
         }
-        private void Control_Click(object sender, RoutedEventArgs e)  {
+        private void Control_Click(object sender, RoutedEventArgs e)
+        {
             IShape item = (IShape)(sender as Button)!.Tag;
-            _painter = item; 
+            _painter = item;
         }
 
         private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -112,11 +117,11 @@ namespace DemoPaint
 
             _isDrawing = true;
             _start = e.GetPosition(myCanvas);
-            
-           if(_prePainter!= null)
+
+            if (_prePainter != null)
             {
 
-                if (_prePainter.Convert() is TextBox && myCanvas.Children[myCanvas.Children.Count-1] is TextBox textBox1)
+                if (_prePainter.Convert() is TextBox && myCanvas.Children[myCanvas.Children.Count - 1] is TextBox textBox1)
                 {
                     //Debug.WriteLine(textBox1.Text);
                     _prePainter.Text = textBox1.Text;
@@ -126,12 +131,12 @@ namespace DemoPaint
         }
         int count;
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
-        {   
+        {
             if (_isDrawing)
             {
                 _end = e.GetPosition(myCanvas);
                 // **Handle potential null reference:**
-                if (_lastElement != null && count < myCanvas.Children.Count )
+                if (_lastElement != null && count < myCanvas.Children.Count)
                 {
                     myCanvas.Children.Remove(_lastElement);
                 }
@@ -148,6 +153,19 @@ namespace DemoPaint
         private void Canvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             count++;
+            if (_isDrawing)
+            {
+                if (_painter.Convert() is not TextBox)
+                {
+                    _painters.Add((IShape)_painter.Clone());
+
+                }
+                else
+                {
+                    _prePainter = (IShape)_painter.Clone();
+
+                }
+            }
             _isDrawing = false;
             var viewModel = new TextViewModel();
             //if (myCanvas.Children[myCanvas.Children.Count] is TextBox textBox)
@@ -155,16 +173,6 @@ namespace DemoPaint
             //    _painter.Text = textBox.Text;
             //    Debug.WriteLine(_painter.Text);
             //}
-            if(_painter.Convert() is not TextBox)
-            {
-                _painters.Add((IShape)_painter.Clone());
-
-            }
-            else
-            {
-                _prePainter = (IShape)_painter.Clone();
-
-            }
 
             // Save
             byte[] serializedShapes = SerializeShapes(_painters);
@@ -337,7 +345,7 @@ namespace DemoPaint
                                 //Debug.WriteLine(shapeInstance.Text);
                                 // Add the reconstructed shape to your list
                                 shapes.Add((IShape)shapeInstance.Clone());
-                            }    
+                            }
                         }
 
                     }
@@ -348,7 +356,67 @@ namespace DemoPaint
 
         private void zoomCanvas_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            
+
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Image Files (*.bmp;*.png;*.jpg;*.jpeg)|*.bmp;*.png;*.jpg;*.jpeg|All Files (*.*)|*.*";
+            saveFileDialog.DefaultExt = ".png";
+            saveFileDialog.AddExtension = true;
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                string filePath = saveFileDialog.FileName;
+                // Render the canvas to a bitmap
+                RenderTargetBitmap renderTarget = new RenderTargetBitmap(
+                    (int)myCanvas.ActualWidth,
+                    (int)myCanvas.ActualHeight,
+                    96, 96, PixelFormats.Pbgra32);
+                renderTarget.Render(myCanvas);
+
+                // Save the bitmap to a file
+                PngBitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(renderTarget));
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    encoder.Save(fileStream);
+                }
+            }
+        }
+
+        private void Load_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Image Files (*.bmp;*.png;*.jpg;*.jpeg)|*.bmp;*.png;*.jpg;*.jpeg|All Files (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string filePath = openFileDialog.FileName;
+                // Load the image from a file
+                BitmapImage bitmapImage = new BitmapImage(new Uri(filePath));
+
+                // Create an Image control and set its source to the loaded image
+                Image imageControl = new Image
+                {
+                    Source = bitmapImage,
+                    Width = bitmapImage.Width,
+                    Height = bitmapImage.Height
+                };
+
+                // Add the Image control to the canvas
+                myCanvas.Children.Add(imageControl);
+            }
+
+        }
+
+        private void New_Click(object sender, RoutedEventArgs e)
+        {
+            myCanvas.Children.Clear();
         }
     }
 }

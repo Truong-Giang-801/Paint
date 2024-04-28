@@ -8,6 +8,9 @@
         Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
     <DockPanel LastChildFill="True">
         <StackPanel Name="actions" DockPanel.Dock="Top" Orientation="Horizontal" Height="40" Background="Black">
+            <Button Name="New" Content="New" Click="New_Click" Width="80" Height="35"></Button>
+            <Button Name="Save" Content="Save" Click="Save_Click" Width="80" Height="35"></Button>
+            <Button Name="Load" Content="Load" Click="Load_Click" Width="80" Height="35"></Button>
         </StackPanel>
         <Grid>
             <ScrollViewer x:Name="scrollViewer" PreviewMouseMove="scrollViewer_PreviewMouseMove" PreviewMouseLeftButtonUp="scrollViewer_PreviewMouseLeftButtonUp" PreviewMouseLeftButtonDown="scrollViewer_PreviewMouseLeftButtonDown" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
