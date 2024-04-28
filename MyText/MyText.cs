@@ -14,7 +14,9 @@ namespace MyText
         private Point start { get; set; }
         private Point end { get; set; }
         public string? text { get; set; }
-        
+        public Color Color { get; set; }
+        public List<int>? StrokeType { get; set; }
+        public int Thickness { get; set; }
         public Point Start
         {
             get { return start; }
