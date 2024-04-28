@@ -464,7 +464,6 @@ namespace DemoPaint
 
             // Convert the WPF color to a System.Drawing.Color
             System.Drawing.Color drawingColor = System.Drawing.Color.FromArgb(selectedColor.A, selectedColor.R, selectedColor.G, selectedColor.B);
-
             // Assign the converted color to your property
             DisplayShape.Color = drawingColor;
         }

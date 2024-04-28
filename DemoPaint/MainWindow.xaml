@@ -72,8 +72,9 @@
                     </Grid>
                 </ComboBoxItem>
             </ComboBox>
-            <xctk:ColorPicker SelectedColorChanged="ColorPicker_SelectedColorChanged" Width="100"/>
-
+            <xctk:ColorPicker Name="ColorPicker"  
+                  SelectedColorChanged="ColorPicker_SelectedColorChanged" 
+                  Width="100" ShowRecentColors="True" SelectedColor="Black" />
         </StackPanel>
         <StackPanel Name="actions" DockPanel.Dock="Top" Orientation="Horizontal" Height="40" Background="Black">
         </StackPanel>
