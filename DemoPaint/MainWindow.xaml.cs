@@ -79,31 +79,9 @@ namespace DemoPaint
                 control.Click += Control_Click;
                 actions.Children.Add(control);
             }
-            if (File.Exists("shapes.bin"))
-            {
-                // Ask the user if they want to load the shapes.bin file
-                MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Do you want to load the shapes from shapes.bin?", "Load Shapes", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Question);
-                if (messageBoxResult == MessageBoxResult.Yes)
-                {
-                    // Load
-                    // If the user wants to load the file, read its contents and deserialize the shapes
-                    byte[] loadedData = File.ReadAllBytes("shapes.bin");
-                    List<IShape> loadedShapes = DeserializeShapes(loadedData);
-                    _painters = loadedShapes;
-                    count = _painters.Count;
-                    foreach (var item in _painters)
-                    {
-                        UIElement element = item.Convert();
-
-                        if (element is TextBox textBox)
-                        {
-                            textBox.ReleaseMouseCapture();
-                        }
-                        myCanvas.Children.Add(item.Convert());
-                    }
-                }
-            }
-            else count = 0;
+            
+                    
+            count = 0;
             _painter = _prototypes[0];
         }
         private void Control_Click(object sender, RoutedEventArgs e)
@@ -173,10 +151,6 @@ namespace DemoPaint
             //    _painter.Text = textBox.Text;
             //    Debug.WriteLine(_painter.Text);
             //}
-
-            // Save
-            byte[] serializedShapes = SerializeShapes(_painters);
-            File.WriteAllBytes("shapes.bin", serializedShapes);
         }
 
 
@@ -367,6 +341,69 @@ namespace DemoPaint
         private void Save_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Bin file|*.bin";
+            saveFileDialog.DefaultExt = ".bin";
+            saveFileDialog.AddExtension = true;
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                // Ensure the file name ends with .bin
+                string fileName = saveFileDialog.FileName;
+                if (!fileName.EndsWith(".bin", StringComparison.OrdinalIgnoreCase))
+                {
+                    fileName += ".bin";
+                }
+
+                Save(fileName, _painters);
+            }
+        }
+
+        private void Load_Click(object sender, RoutedEventArgs e)
+        {
+            myCanvas.Children.Clear();
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Bin file|*.bin";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                _painters = Load(openFileDialog.FileName);
+                count = _painters.Count;
+            }
+        }
+
+        private void New_Click(object sender, RoutedEventArgs e)
+        {
+            myCanvas.Children.Clear();
+            _painters.Clear();
+            count = 0;
+        }
+
+        private List<IShape> Load(string filePath)
+        {
+            // Load
+            // If the user wants to load the file, read its contents and deserialize the shapes
+            byte[] loadedData = File.ReadAllBytes(filePath);
+            List<IShape> loadedShapes = DeserializeShapes(loadedData);
+            foreach (var item in loadedShapes)
+            {
+                UIElement element = item.Convert();
+
+                if (element is TextBox textBox)
+                {
+                    textBox.ReleaseMouseCapture();
+                }
+                myCanvas.Children.Add(item.Convert());
+            }
+            return loadedShapes;
+        }
+        private void Save(string filePath, List<IShape> shapes)
+        {
+            byte[] serializedShapes = SerializeShapes(shapes);
+            File.Delete(filePath);
+            File.WriteAllBytes(filePath, serializedShapes);
+        }
+
+        private void Save_Image_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Image Files (*.bmp;*.png;*.jpg;*.jpeg)|*.bmp;*.png;*.jpg;*.jpeg|All Files (*.*)|*.*";
             saveFileDialog.DefaultExt = ".png";
             saveFileDialog.AddExtension = true;
@@ -390,7 +427,7 @@ namespace DemoPaint
             }
         }
 
-        private void Load_Click(object sender, RoutedEventArgs e)
+        private void Load_Image_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Image Files (*.bmp;*.png;*.jpg;*.jpeg)|*.bmp;*.png;*.jpg;*.jpeg|All Files (*.*)|*.*";
@@ -406,18 +443,14 @@ namespace DemoPaint
                     Source = bitmapImage,
                     Width = bitmapImage.Width,
                     Height = bitmapImage.Height
+                
                 };
 
+                count = 1;
+                myCanvas.Children.Clear();
                 // Add the Image control to the canvas
                 myCanvas.Children.Add(imageControl);
             }
-
-        }
-
-        private void New_Click(object sender, RoutedEventArgs e)
-        {
-            myCanvas.Children.Clear();
-            count = 0;
         }
     }
 }
