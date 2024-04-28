@@ -417,6 +417,7 @@ namespace DemoPaint
         private void New_Click(object sender, RoutedEventArgs e)
         {
             myCanvas.Children.Clear();
+            count = 0;
         }
     }
 }
