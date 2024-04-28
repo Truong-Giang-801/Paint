@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyRectangle", "MyRectangle\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyEllipse", "MyEllipse\MyEllipse.csproj", "{51F43469-F820-4F02-9505-EF7744B8F804}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyText", "MyText\MyText.csproj", "{9CB9C0A8-1FC8-4D9C-B2B3-23A2556C8902}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyText", "MyText\MyText.csproj", "{9CB9C0A8-1FC8-4D9C-B2B3-23A2556C8902}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
