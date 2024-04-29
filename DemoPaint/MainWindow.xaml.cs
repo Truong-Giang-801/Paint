@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 using Shapes;
 using MyText;
 using Microsoft.Win32;
-
+using EditIShapeDisplay;
 namespace DemoPaint
 {
     /// <summary>
@@ -43,6 +43,7 @@ namespace DemoPaint
         List<IShape> _painters = new List<IShape>();
         UIElement _lastElement;
         List<IShape> _prototypes = new List<IShape>();
+        IShapeDisplay DisplayShape = new IShapeDisplay();
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // Single configuration
@@ -121,6 +122,9 @@ namespace DemoPaint
 
                 _painter.Start = _start;
                 _painter.End = _end;
+                _painter.Thickness = DisplayShape.Thickness;
+                _painter.Color = Color.FromArgb(DisplayShape.Color.A, DisplayShape.Color.R, DisplayShape.Color.G, DisplayShape.Color.B);
+                _painter.StrokeType = DisplayShape.StrokeType;
                 UIElement newElement = _painter.Convert();
                 myCanvas.Children.Add(newElement);
                 _lastElement = newElement;
@@ -451,6 +455,51 @@ namespace DemoPaint
                 // Add the Image control to the canvas
                 myCanvas.Children.Add(imageControl);
             }
+        }
+
+        private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        {
+
+            Color selectedColor = e.NewValue ?? Colors.Black; // Default to black if no color is selected
+
+            // Convert the WPF color to a System.Drawing.Color
+            System.Drawing.Color drawingColor = System.Drawing.Color.FromArgb(selectedColor.A, selectedColor.R, selectedColor.G, selectedColor.B);
+            // Assign the converted color to your property
+            DisplayShape.Color = drawingColor;
+        }
+
+        private void StrokeThickness_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox comboBox = (ComboBox)sender;
+            DisplayShape.Thickness = comboBox.SelectedIndex + 1;
+
+        }
+
+        private void StrokeType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox cmb = (ComboBox)sender;
+            List<int> DashArray = null;
+            
+            if ( cmb.SelectedIndex == 1)
+            {
+                DashArray = [1,2];
+            }
+            else if ( cmb.SelectedIndex == 2)
+            {
+                DashArray = [2,2,2,2];
+
+            }
+            else if ( cmb.SelectedIndex == 3)
+            {
+                DashArray = [1, 1, 4];
+            }
+            else if( cmb.SelectedIndex == 4)
+            {
+                DashArray = [4, 1, 4];
+
+            }
+            DisplayShape.StrokeType = DashArray;
+
         }
     }
 }

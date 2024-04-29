@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EditIShapeDisplay\EditIShapeDisplay.csproj" />
     <ProjectReference Include="..\IShape\IShape.csproj" />
     <ProjectReference Include="..\MyEllipse\MyEllipse.csproj" />
     <ProjectReference Include="..\MyLine\MyLine.csproj" />

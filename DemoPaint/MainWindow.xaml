@@ -3,17 +3,79 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+
         xmlns:local="clr-namespace:DemoPaint"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
     <DockPanel LastChildFill="True">
+        <Canvas>
+        </Canvas>
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="40" Background="Black">
-                <Button Name="New_Button" Content="New" Click="New_Click" Width="80" Height="35"></Button>
-                <Button Name="Save_Button" Content="Save" Click="Save_Click" Width="80" Height="35"></Button>
-                <Button Name="Load_Button" Content="Load" Click="Load_Click" Width="80" Height="35"></Button>
-                <Button Name="Save_Image_Button" Content="Save as Image" Click="Save_Image_Click" Width="80" Height="35"></Button>
-                <Button Name="Load_Image_Button" Content="Load Image" Click="Load_Image_Click" Width="80" Height="35"></Button>
-            </StackPanel>
+            <Button Name="New_Button" Content="New" Click="New_Click" Width="80" Height="35"></Button>
+            <Button Name="Save_Button" Content="Save" Click="Save_Click" Width="80" Height="35"></Button>
+            <Button Name="Load_Button" Content="Load" Click="Load_Click" Width="80" Height="35"></Button>
+            <Button Name="Save_Image_Button" Content="Save as Image" Click="Save_Image_Click" Width="80" Height="35"></Button>
+            <Button Name="Load_Image_Button" Content="Load Image" Click="Load_Image_Click" Width="80" Height="35"></Button>
+            <ComboBox Name="StrokeThickness_ComboBox" Width="100"  SelectionChanged="StrokeThickness_SelectionChanged" Height="35" SelectedIndex="1" Padding="0,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="20" FontWeight="Bold" BorderThickness="2,1,1,1">
+
+                <ComboBoxItem IsSelected="True">
+                    <Grid Width="100" Height="10" Background="Transparent" Margin="0,5,0,5" >
+                        <Rectangle Fill="Black" HorizontalAlignment="Stretch" VerticalAlignment="Center"  Height="2"/>
+                    </Grid>
+                </ComboBoxItem>
+                <ComboBoxItem >
+                    <Grid Width="100" Height="10" Background="Transparent" Margin="0,5,0,5">
+                        <Rectangle Fill="Black" HorizontalAlignment="Stretch" VerticalAlignment="Center"  Height="4"/>
+                    </Grid>
+                </ComboBoxItem>
+                <ComboBoxItem >
+                    <Grid Width="100" Height="10" Background="Transparent" Margin="0,5,0,5">
+                        <Rectangle Fill="Black" HorizontalAlignment="Stretch" VerticalAlignment="Center"  Height="6"/>
+                    </Grid>
+                </ComboBoxItem>
+                <ComboBoxItem >
+                    <Grid Width="100" Height="10" Background="Transparent" Margin="0,5,0,5">
+                        <Rectangle Fill="Black" HorizontalAlignment="Stretch" VerticalAlignment="Center"  Height="8"/>
+                    </Grid>
+                </ComboBoxItem>
+                <ComboBoxItem >
+                    <Grid Width="100" Height="10" Background="Transparent" Margin="0,5,0,5">
+                        <Rectangle Fill="Black" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="10"/>
+                    </Grid>
+                </ComboBoxItem>
+            </ComboBox>
+            <ComboBox Name="StrokeType_ComboBox" Width="100" SelectionChanged="StrokeType_SelectionChanged" Height="35" SelectedIndex="0" Padding="3,0,2,6" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" BorderThickness="2,1,1,1">
+                <ComboBoxItem IsSelected="True">
+                    <Grid Width="100" Height="10" Margin="0,2,0,2" >
+                        <Path Fill="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Center" Data="M2,0 L98,0" Stroke="Black" StrokeThickness="2" StrokeDashArray=""/>
+                    </Grid>
+                </ComboBoxItem>
+                <ComboBoxItem >
+                    <Grid Width="100" Height="10" Margin="0,2,0,2">
+                        <Path Fill="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Center" Data="M2,0 L98,0" Stroke="Black" StrokeThickness="2" StrokeDashArray="1 2"/>
+                    </Grid>
+                </ComboBoxItem>
+                <ComboBoxItem  >
+                    <Grid Width="100" Height="10" Margin="0,2,0,2">
+                        <Path Fill="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Center" Data="M2,0 L98,0" Stroke="Black" StrokeThickness="2" StrokeDashArray="2 2 2 2"/>
+                    </Grid>
+                </ComboBoxItem>
+                <ComboBoxItem >
+                    <Grid Width="100" Height="10" Margin="0,2,0,2">
+                        <Path Fill="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Center" Data="M2,0 L98,0" Stroke="Black" StrokeThickness="2" StrokeDashArray="1 1 4"/>
+                    </Grid>
+                </ComboBoxItem>
+                <ComboBoxItem >
+                    <Grid Width="100" Height="10" Margin="0,2,0,2">
+                        <Path Fill="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Center" Data="M2,0 L98,0" Stroke="Black" StrokeThickness="2" StrokeDashArray="4 1 4"/>
+                    </Grid>
+                </ComboBoxItem>
+            </ComboBox>
+            <xctk:ColorPicker Name="ColorPicker"  
+                  SelectedColorChanged="ColorPicker_SelectedColorChanged" 
+                  Width="100" ShowRecentColors="True" SelectedColor="Black" />
+        </StackPanel>
         <StackPanel Name="actions" DockPanel.Dock="Top" Orientation="Horizontal" Height="40" Background="Black">
         </StackPanel>
         <Grid>

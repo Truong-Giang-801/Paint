@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyEllipse", "MyEllipse\MyEl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyText", "MyText\MyText.csproj", "{9CB9C0A8-1FC8-4D9C-B2B3-23A2556C8902}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyImage", "MyImage\MyImage.csproj", "{B8A08AD0-06B8-4B64-AB20-5BBD09E4FD90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyImage", "MyImage\MyImage.csproj", "{B8A08AD0-06B8-4B64-AB20-5BBD09E4FD90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditIShapeDisplay", "EditIShapeDisplay\EditIShapeDisplay.csproj", "{8A95C3DF-DADB-4BAA-9463-CAB7523AAAB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{B8A08AD0-06B8-4B64-AB20-5BBD09E4FD90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8A08AD0-06B8-4B64-AB20-5BBD09E4FD90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8A08AD0-06B8-4B64-AB20-5BBD09E4FD90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A95C3DF-DADB-4BAA-9463-CAB7523AAAB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A95C3DF-DADB-4BAA-9463-CAB7523AAAB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A95C3DF-DADB-4BAA-9463-CAB7523AAAB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A95C3DF-DADB-4BAA-9463-CAB7523AAAB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
