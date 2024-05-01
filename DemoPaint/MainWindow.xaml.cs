@@ -276,10 +276,54 @@ namespace DemoPaint
                         binaryWriter.Write(shape.End.X); // Write the X coordinate of the End point
                         binaryWriter.Write(shape.End.Y); // Write the Y coordinate of the End point
                         binaryWriter.Write(shape.Text.ToString());
+                        binaryWriter.Write(shape.Thickness);
+                        binaryWriter.Write(shape.Color.ToString());
+
+                        //Debug.WriteLine("Color origin: " + shape.Color.ToString());
+                        (int alpha, int red, int green, int blue) = SplitHexColor(shape.Color.ToString());
+
+                        //Debug.WriteLine("Alpha: " + (byte)alpha + "/red: " + red + "/blue: " + blue + "/green: " + green);
+
+                        if (shape.StrokeType != null)
+                        {
+
+                            binaryWriter.Write(shape.StrokeType.Count);
+                            Debug.WriteLine("Number of element to write: " + shape.StrokeType.Count);
+
+                            int count = shape.StrokeType.Count;
+                            for (int j = 0; j < count; j++)
+                            {
+                                binaryWriter.Write((Double)shape.StrokeType[j]);
+                                Debug.WriteLine((Double)shape.StrokeType[j]);
+                            }
+                        }
+                        if (shape.StrokeType == null)
+                        {
+                            Debug.WriteLine("Number of element to write: 0");
+
+                            binaryWriter.Write(0);
+                        }
+
                     }
                 }
                 return memoryStream.ToArray();
             }
+        }
+
+        public static (int Alpha, int Red, int Green, int Blue) SplitHexColor(string colorString)
+        {
+            if (!colorString.StartsWith("#") || colorString.Length != 9)
+            {
+                throw new ArgumentException("Invalid hex color string format.");
+            }
+
+            // Remove the # prefix and convert each hex pair to an integer (0-255)
+            int alpha = Convert.ToInt32(colorString.Substring(1, 2), 16);
+            int red = Convert.ToInt32(colorString.Substring(3, 2), 16);
+            int green = Convert.ToInt32(colorString.Substring(5, 2), 16);
+            int blue = Convert.ToInt32(colorString.Substring(7, 2), 16);
+
+            return (alpha, red, green, blue);
         }
 
         public List<IShape> DeserializeShapes(byte[] data)
@@ -308,6 +352,56 @@ namespace DemoPaint
                         Point endPoint = new Point(endX, endY);
 
                         string text = binaryReader.ReadString();
+
+                        int thickNess = binaryReader.ReadInt32();
+                        string colorString = binaryReader.ReadString();
+                        (int alpha, int red, int green, int blue) = SplitHexColor(colorString);
+
+                        //Debug.WriteLine("Alpha: " + alpha + "/red: " + red + "/blue: " + blue + "/green: " + green);
+                        //string temp = binaryReader.ReadString();
+                        //string hexString = temp;
+                        //if (hexString.StartsWith("#"))
+                        //{
+                        //    hexString = hexString.Substring(1); // Remove leading "#"
+                        //}
+
+                        //byte alpha = 255; // Assuming full opacity (modify if needed)
+                        //byte red, green, blue;
+
+
+                        //red = byte.Parse(hexString.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                        //green = byte.Parse(hexString.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                        //blue = byte.Parse(hexString.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+
+                        //Debug.WriteLine(temp);
+
+
+
+                        Color color = Color.FromArgb((byte)alpha, (byte)red, (byte)green, (byte)blue);
+                        int numDoubles = binaryReader.ReadInt32(); // Read the number of doubles written earlier
+                        //Debug.WriteLine("Number of element to read: " + numDoubles);
+
+                        List<double> strokeType = new List<double>();
+                        if(numDoubles > 0)
+                        {
+                            for (int j = 0; j < numDoubles; j++)
+                            {
+                                double value = binaryReader.ReadDouble();
+                                //Debug.WriteLine(value.ToString());
+                                strokeType.Add(value);
+                            }
+                        }
+                        List<int> intList = new List<int>();
+                        if(strokeType.Count > 0)
+                        {
+                            foreach (double value in strokeType)
+                            {
+                                // Cast the double value to an integer using type conversion (truncation)
+                                int intValue = (int)value;
+                                intList.Add(intValue);
+                            }
+                        }
+                        // Iterate through the list of doubles
                         //Debug.WriteLine(text);
 
                         // Assuming you have a way to create a shape instance based on its name
@@ -320,9 +414,13 @@ namespace DemoPaint
                                 shapeInstance.Start = startPoint;
                                 shapeInstance.End = endPoint;
                                 shapeInstance.Text = text;
+                                shapeInstance.Color = color;
+                                shapeInstance.Thickness = thickNess;
+                                shapeInstance.StrokeType = intList;
                                 //Debug.WriteLine(shapeInstance.Text);
                                 // Add the reconstructed shape to your list
                                 shapes.Add((IShape)shapeInstance.Clone());
+                                Debug.WriteLine("Color: " + shapeInstance.Color + "/ Thickness: " + shapeInstance.Thickness + "/Start: " + shapeInstance.Start);
                             }
                         }
 
