@@ -104,7 +104,11 @@ namespace DemoPaint
                 {
                     //Debug.WriteLine(textBox1.Text);
                     _prePainter.Text = textBox1.Text;
+                    _prePainter.Thickness = 0;
                     _painters.Add((IShape)_prePainter.Clone());
+                    myCanvas.Children.RemoveAt(myCanvas.Children.Count -1);
+                    myCanvas.Children.Add(_prePainter.Convert());
+
                 }
             }
         }
@@ -125,6 +129,7 @@ namespace DemoPaint
                 _painter.Thickness = DisplayShape.Thickness;
                 _painter.Color = Color.FromArgb(DisplayShape.Color.A, DisplayShape.Color.R, DisplayShape.Color.G, DisplayShape.Color.B);
                 _painter.StrokeType = DisplayShape.StrokeType;
+
                 UIElement newElement = _painter.Convert();
                 myCanvas.Children.Add(newElement);
                 _lastElement = newElement;
@@ -145,7 +150,6 @@ namespace DemoPaint
                 else
                 {
                     _prePainter = (IShape)_painter.Clone();
-
                 }
             }
             _isDrawing = false;
@@ -597,6 +601,30 @@ namespace DemoPaint
 
             }
             DisplayShape.StrokeType = DashArray;
+
+        }
+        List<UIElement> UndoRedo = new List<UIElement>();
+        List<IShape> UndoRedoShape = new List<IShape>();
+        private void Redo_Click(object sender, RoutedEventArgs e)
+        {
+            if(UndoRedo.Count > 0 && UndoRedoShape.Count > 0)
+            {
+                myCanvas.Children.Add(UndoRedo[UndoRedo.Count - 1]);
+                UndoRedo.RemoveAt(UndoRedo.Count - 1);
+                _painters.Add(UndoRedoShape[UndoRedoShape.Count - 1]);
+                UndoRedoShape.RemoveAt(UndoRedoShape.Count - 1);
+            }
+        }
+
+        private void Undo_Click(object sender, RoutedEventArgs e)
+        {
+            if(myCanvas.Children.Count > 0 && _painters.Count > 0)
+            {
+                UndoRedo.Add( myCanvas.Children[myCanvas.Children.Count - 1]);
+                myCanvas.Children.RemoveAt(myCanvas.Children.Count -1);
+                UndoRedoShape.Add(_painters[_painters.Count - 1]);
+                _painters.RemoveAt(_painters.Count - 1);
+            }
 
         }
     }

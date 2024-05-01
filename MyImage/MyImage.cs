@@ -45,7 +45,7 @@ namespace MyImage
                 end = value;
             }
         }
-        public string Name => "Line";
+        public string Name => "Image";
 
         public object Clone()
         {
