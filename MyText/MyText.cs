@@ -59,7 +59,9 @@ namespace MyText
             {
                 Width = Math.Abs(end.X - start.X),
                 Height = Math.Abs(end.Y - start.Y),
-                Text =text,// Initial empty text
+                Text = text,// Initial empty text
+                Background = new SolidColorBrush(Colors.Transparent),
+                BorderThickness = new Thickness(Thickness),
             };
 
             // Bind Text property to ViewModel

@@ -7,7 +7,7 @@
 
         xmlns:local="clr-namespace:DemoPaint"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="MainWindow" Height="450" Width="900" Loaded="Window_Loaded">
     <DockPanel LastChildFill="True">
         <Canvas>
         </Canvas>
@@ -75,7 +75,11 @@
             <xctk:ColorPicker Name="ColorPicker"  
                   SelectedColorChanged="ColorPicker_SelectedColorChanged" 
                   Width="100" ShowRecentColors="True" SelectedColor="Black" />
+            <Button Name="Undo" Content="Undo" Click="Undo_Click" Width="42" Height="36" Margin="5,0,9,0"></Button>
+            <Button Name="Redo" Content="Redo" Click="Redo_Click" Width="42" Height="36"></Button>
+
         </StackPanel>
+
         <StackPanel Name="actions" DockPanel.Dock="Top" Orientation="Horizontal" Height="40" Background="Black">
         </StackPanel>
         <Grid>
