@@ -17,6 +17,7 @@ using Shapes;
 using MyText;
 using Microsoft.Win32;
 using EditIShapeDisplay;
+using MyImage;
 namespace DemoPaint
 {
     /// <summary>
@@ -93,10 +94,25 @@ namespace DemoPaint
 
         private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-
+            
             _isDrawing = true;
             _start = e.GetPosition(myCanvas);
+            UndoRedo.Clear();
+            UndoRedoShape.Clear();
+            if (_painter.Name == "Image")
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Filter = "Image Files (*.bmp;*.png;*.jpg;*.jpeg)|*.bmp;*.png;*.jpg;*.jpeg|All Files (*.*)|*.*";
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    _painter.Start = _start;
+                    _painter.Text = openFileDialog.FileName;
 
+                    UIElement newElement = _painter.Convert();
+                    myCanvas.Children.Add(newElement);
+                    _lastElement = newElement;
+                }
+            }
             if (_prePainter != null)
             {
 
@@ -115,7 +131,7 @@ namespace DemoPaint
         int count;
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (_isDrawing)
+            if (_isDrawing && _painter.Name!="Image")
             {
                 _end = e.GetPosition(myCanvas);
                 // **Handle potential null reference:**
@@ -535,27 +551,24 @@ namespace DemoPaint
 
         private void Load_Image_Click(object sender, RoutedEventArgs e)
         {
+            myCanvas.Children.Clear();
+            _painters.Clear();
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Image Files (*.bmp;*.png;*.jpg;*.jpeg)|*.bmp;*.png;*.jpg;*.jpeg|All Files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
-                string filePath = openFileDialog.FileName;
-                // Load the image from a file
-                BitmapImage bitmapImage = new BitmapImage(new Uri(filePath));
-
-                // Create an Image control and set its source to the loaded image
-                Image imageControl = new Image
+                var filePath = openFileDialog.FileName;
+                foreach (var item in _prototypes)
                 {
-                    Source = bitmapImage,
-                    Width = bitmapImage.Width,
-                    Height = bitmapImage.Height
-                
-                };
-
-                count = 1;
-                myCanvas.Children.Clear();
-                // Add the Image control to the canvas
-                myCanvas.Children.Add(imageControl);
+                    if (item.Name == "Image")
+                    {
+                        item.Text = filePath;
+                        item.Start = new Point(0, 0);
+                        _painters.Add((IShape)item.Clone());
+                        count++;
+                        myCanvas.Children.Add(item.Convert());
+                    }
+                }
             }
         }
 
@@ -613,6 +626,7 @@ namespace DemoPaint
                 UndoRedo.RemoveAt(UndoRedo.Count - 1);
                 _painters.Add(UndoRedoShape[UndoRedoShape.Count - 1]);
                 UndoRedoShape.RemoveAt(UndoRedoShape.Count - 1);
+                count++;
             }
         }
 
@@ -621,9 +635,10 @@ namespace DemoPaint
             if(myCanvas.Children.Count > 0 && _painters.Count > 0)
             {
                 UndoRedo.Add( myCanvas.Children[myCanvas.Children.Count - 1]);
-                myCanvas.Children.RemoveAt(myCanvas.Children.Count -1);
+                myCanvas.Children.RemoveAt(myCanvas.Children.Count - 1);
                 UndoRedoShape.Add(_painters[_painters.Count - 1]);
                 _painters.RemoveAt(_painters.Count - 1);
+                count--;
             }
 
         }

@@ -4,6 +4,8 @@ using System.Windows.Shapes;
 using System.Windows;
 using Shapes;
 using static System.Net.Mime.MediaTypeNames;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace MyImage
 {
@@ -54,17 +56,31 @@ namespace MyImage
 
         public UIElement Convert()
         {
-            return new Line()
+            // Check if 'text' is null or empty
+            if (string.IsNullOrEmpty(text))
             {
-                X1 = start.X,
-                Y1 = start.Y,
-                X2 = end.X,
-                Y2 = end.Y,
-                StrokeThickness = 1,
-                Stroke = new SolidColorBrush(Colors.Red)
+                // Return null or a placeholder indicating no image is available
+                return null;
+            }
+
+            // Assuming 'text' holds the URI of the image file
+            var imageUri = new Uri(text, UriKind.RelativeOrAbsolute);
+
+            var newImage = new System.Windows.Controls.Image()
+            {
+                Source = new BitmapImage(imageUri),
+                Stretch = Stretch.None // Display the image at its original size
             };
 
+            Canvas.SetLeft(newImage, start.X);
+            Canvas.SetTop(newImage, start.Y);
+
+            // No need to focus on an Image control as it's not interactive
+
+            return newImage;
         }
+
+
     }
 
 }
