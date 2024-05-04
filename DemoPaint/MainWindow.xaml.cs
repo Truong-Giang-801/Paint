@@ -217,63 +217,6 @@ namespace DemoPaint
             e.Handled = true;
         }
 
-        private void scrollViewer_PreviewMouseMove(object sender, MouseEventArgs e)
-        {
-            if (isDragging)
-            {
-                Point currentPosition = e.GetPosition(scrollViewer);
-                double offsetX = currentPosition.X - lastMousePosition.X;
-                double offsetY = currentPosition.Y - lastMousePosition.Y;
-
-                // Adjust the scroll viewer's scroll bars
-                scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset - offsetX);
-                scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - offsetY);
-
-                lastMousePosition = currentPosition;
-            }
-        }
-
-        private void scrollViewer_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (isDragging)
-            {
-                isDragging = false;
-                scrollViewer.ReleaseMouseCapture();
-                e.Handled = true;
-            }
-
-        }
-
-        private void scrollViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            DependencyObject obj = e.OriginalSource as DependencyObject;
-            while (obj != null && obj != scrollViewer)
-            {
-                if (obj is ScrollBar)
-                {
-                    // Handle the click on the ScrollBar
-                    // For example, you can set a flag to indicate that the scrollbar is being dragged
-                    isDragging = true;
-                    lastMousePosition = e.GetPosition(scrollViewer);
-                    scrollViewer.CaptureMouse();
-                    e.Handled = true; // Mark the event as handled to prevent it from bubbling further
-                    return;
-                }
-                obj = VisualTreeHelper.GetParent(obj);
-            }
-        }
-
-        private void scrollViewer_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.OriginalSource is ScrollBar)
-            {
-                // Handle the click on the ScrollBar
-                isDragging = true;
-                lastMousePosition = e.GetPosition(scrollViewer);
-                scrollViewer.CaptureMouse();
-                e.Handled = true; // Mark the event as handled
-            }
-        }
         public byte[] SerializeShapes(List<IShape> shapes)
         {
             using (var memoryStream = new MemoryStream())
@@ -527,18 +470,20 @@ namespace DemoPaint
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Image Files (*.bmp;*.png;*.jpg;*.jpeg)|*.bmp;*.png;*.jpg;*.jpeg|All Files (*.*)|*.*";
-            saveFileDialog.DefaultExt = ".png";
+            saveFileDialog.DefaultExt = ".jpg";
             saveFileDialog.AddExtension = true;
+
             if (saveFileDialog.ShowDialog() == true)
             {
                 string filePath = saveFileDialog.FileName;
+                // Set the canvas background to white
+                myCanvas.Background = Brushes.White;
                 // Render the canvas to a bitmap
                 RenderTargetBitmap renderTarget = new RenderTargetBitmap(
                     (int)myCanvas.ActualWidth,
                     (int)myCanvas.ActualHeight,
                     96, 96, PixelFormats.Pbgra32);
                 renderTarget.Render(myCanvas);
-
                 // Save the bitmap to a file
                 PngBitmapEncoder encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(renderTarget));

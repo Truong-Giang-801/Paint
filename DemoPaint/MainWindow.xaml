@@ -9,8 +9,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="900" Loaded="Window_Loaded">
     <DockPanel LastChildFill="True">
-        <Canvas>
-        </Canvas>
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="40" Background="Black">
             <Button Name="New_Button" Content="New" Click="New_Click" Width="80" Height="35"></Button>
             <Button Name="Save_Button" Content="Save" Click="Save_Click" Width="80" Height="35"></Button>
@@ -83,7 +81,7 @@
         <StackPanel Name="actions" DockPanel.Dock="Top" Orientation="Horizontal" Height="40" Background="Black">
         </StackPanel>
         <Grid>
-            <ScrollViewer x:Name="scrollViewer" PreviewMouseMove="scrollViewer_PreviewMouseMove" PreviewMouseLeftButtonUp="scrollViewer_PreviewMouseLeftButtonUp" PreviewMouseLeftButtonDown="scrollViewer_PreviewMouseLeftButtonDown" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer x:Name="scrollViewer"  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <Canvas x:Name="myCanvas">
                     <Canvas.RenderTransform>
                         <ScaleTransform x:Name="scaleTransform" ScaleX="1" ScaleY="1"/>
